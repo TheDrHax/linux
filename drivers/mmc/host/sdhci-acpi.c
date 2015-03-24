@@ -194,7 +194,7 @@ out:
 static void sdhci_acpi_int_dma_latency(struct sdhci_host *host)
 {
 	if (sdhci_acpi_on_byt()) {
-		host->dma_latency = 20;
+		host->dma_latency = 0;
 		host->lat_cancel_delay = 275;
 	}
 }
