@@ -45,13 +45,19 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
 	struct brcmf_rev_info *ri;
 	char *ptr;
 	s32 err;
+	int i;
 
 	/* retreive mac address */
-	err = brcmf_fil_iovar_data_get(ifp, "cur_etheraddr", ifp->mac_addr,
-				       sizeof(ifp->mac_addr));
-	if (err < 0) {
-		brcmf_err("Retreiving cur_etheraddr failed, %d\n", err);
-		goto done;
+	for (i = 0; i < 9; i++) {
+		err = brcmf_fil_iovar_data_get(ifp, "cur_etheraddr", ifp->mac_addr,
+					       sizeof(ifp->mac_addr));
+		if (err < 0 && i == 9) {
+			brcmf_err("Retreiving cur_etheraddr failed, %d\n",
+				  err);
+			goto done;
+		} else {
+			msleep(100);
+		}
 	}
 	memcpy(ifp->drvr->mac, ifp->mac_addr, sizeof(ifp->drvr->mac));
 
@@ -82,13 +88,17 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
 	ri->result = err;
 
 	/* query for 'ver' to get version info from firmware */
-	memset(buf, 0, sizeof(buf));
-	strcpy(buf, "ver");
-	err = brcmf_fil_iovar_data_get(ifp, "ver", buf, sizeof(buf));
-	if (err < 0) {
-		brcmf_err("Retreiving version information failed, %d\n",
-			  err);
-		goto done;
+	for (i = 0; i < 10; i++) {
+		memset(buf, 0, sizeof(buf));
+		strcpy(buf, "ver");
+		err = brcmf_fil_iovar_data_get(ifp, "ver", buf, sizeof(buf));
+		if (err < 0 && i == 9) {
+			brcmf_err("Retreiving version information failed, %d\n",
+				  err);
+			goto done;
+		} else {
+			msleep(100);
+		}
 	}
 	ptr = (char *)buf;
 	strsep(&ptr, "\n");
@@ -101,10 +111,14 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
 	strlcpy(ifp->drvr->fwver, ptr, sizeof(ifp->drvr->fwver));
 
 	/* set mpc */
-	err = brcmf_fil_iovar_int_set(ifp, "mpc", 1);
-	if (err) {
-		brcmf_err("failed setting mpc\n");
-		goto done;
+	for (i = 0; i < 10; i++) {
+		err = brcmf_fil_iovar_int_set(ifp, "mpc", 1);
+		if (err && i == 9) {
+			brcmf_err("failed setting mpc\n");
+			goto done;
+		} else {
+			msleep(100);
+		}
 	}
 
 	/*
