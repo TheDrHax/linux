@@ -378,6 +378,8 @@ void gen6_enable_rps_interrupts(struct drm_device *dev)
 
 u32 gen6_sanitize_rps_pm_mask(struct drm_i915_private *dev_priv, u32 mask)
 {
+	if (IS_VALLEYVIEW(dev_priv))
+		return 0;
 	/*
 	 * SNB,IVB can while VLV,CHV may hard hang on looping batchbuffer
 	 * if GEN6_PM_UP_EI_EXPIRED is masked.
