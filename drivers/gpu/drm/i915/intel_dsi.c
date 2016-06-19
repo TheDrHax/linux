@@ -614,6 +614,8 @@ static void intel_dsi_disable(struct intel_encoder *encoder)
 	struct drm_device *dev = encoder->base.dev;
 	struct drm_i915_private *dev_priv = to_i915(dev);
 	struct intel_dsi *intel_dsi = enc_to_intel_dsi(&encoder->base);
+	struct intel_connector *intel_connector =
+		intel_dsi->attached_connector;
 	enum port port;
 	u32 temp;
 
@@ -626,6 +628,8 @@ static void intel_dsi_disable(struct intel_encoder *encoder)
 		intel_dsi_port_disable(encoder);
 		msleep(2);
 	}
+
+	intel_panel_disable_backlight(intel_connector);
 
 	for_each_dsi_port(port, intel_dsi->ports) {
 		/* Panel commands can be sent when clock is in LP11 */
@@ -1366,6 +1370,7 @@ static void intel_dsi_connector_destroy(struct drm_connector *connector)
 
 	DRM_DEBUG_KMS("\n");
 	intel_panel_fini(&intel_connector->panel);
+	intel_panel_destroy_backlight(connector);
 	drm_connector_cleanup(connector);
 	kfree(connector);
 }
