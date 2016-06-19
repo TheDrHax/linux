@@ -58,6 +58,7 @@ struct i915_params i915 __read_mostly = {
 	.guc_log_level = -1,
 	.enable_dp_mst = true,
 	.inject_load_failure = 0,
+	.force_backlight_pmic = 1,
 };
 
 module_param_named(modeset, i915.modeset, int, 0400);
@@ -181,6 +182,10 @@ module_param_named(mmio_debug, i915.mmio_debug, int, 0600);
 MODULE_PARM_DESC(mmio_debug,
 	"Enable the MMIO debug code for the first N failures (default: off). "
 	"This may negatively affect performance.");
+
+module_param_named(force_backlight_pmic, i915.force_backlight_pmic, bool, 0600);
+MODULE_PARM_DESC(force_backlight_pmic,
+	"Force backlight adjusting through pmic (default: false).");
 
 module_param_named(verbose_state_checks, i915.verbose_state_checks, bool, 0600);
 MODULE_PARM_DESC(verbose_state_checks,
